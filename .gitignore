@@ -1,0 +1,11 @@
+.idea
+.settings
+.vscode
+.project
+.parcel-cache
+tmp
+node_modules
+
+/static
+/config.toml
+
