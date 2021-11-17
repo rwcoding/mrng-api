@@ -39,7 +39,7 @@ func (request *addRequest) Run() *api.Response {
 		return api.NewErrorResponse("标识中不允许空白、点等特殊字符")
 	}
 
-	if db.Create(&p).RowsAffected == 0 {
+	if db().Create(&p).RowsAffected == 0 {
 		return api.NewErrorResponse("添加失败")
 	}
 

@@ -25,7 +25,7 @@ func NewApiEdit(ctx *boot.Context) boot.Logic {
 
 func (request *editRequest) Run() *api.Response {
 	p := models.ConfigMain{}
-	if db.Take(&p, request.Id).Error != nil {
+	if db().Take(&p, request.Id).Error != nil {
 		return api.NewErrorResponse("无效的配置")
 	}
 
@@ -37,11 +37,11 @@ func (request *editRequest) Run() *api.Response {
 	//p.K = request.K
 	//p.Status = request.Status
 
-	if db.Save(&p).RowsAffected == 0 {
+	if db().Save(&p).RowsAffected == 0 {
 		return api.NewErrorResponse("修改失败")
 	}
 
-	db.Create(&models.ConfigLog{
+	db().Create(&models.ConfigLog{
 		Type:      models.LOG_TYPE_UPDATE,
 		Name:      p.Name,
 		Sign:      p.Sign,

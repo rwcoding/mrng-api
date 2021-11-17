@@ -5,7 +5,7 @@ import (
 	"github.com/rwcoding/mrng/models"
 )
 
-var db = models.GetDB()
+var db = models.GetDB
 
 func init() {
 	goback.Route("mrng.config.log.list", NewApiList, "日志列表")

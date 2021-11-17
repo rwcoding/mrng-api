@@ -21,13 +21,13 @@ func NewApiStatus(ctx *boot.Context) boot.Logic {
 func (request *statusRequest) Run() *api.Response {
 
 	p := models.ConfigMain{}
-	if db.Take(&p, request.Id).Error != nil {
+	if db().Take(&p, request.Id).Error != nil {
 		return api.NewErrorResponse("无效的配置")
 	}
 
 	p.Status = request.Status
 
-	if db.Save(&p).RowsAffected == 0 {
+	if db().Save(&p).RowsAffected == 0 {
 		return api.NewErrorResponse("操作失败")
 	}
 

@@ -21,7 +21,7 @@ func (request *syncRequest) Run() *api.Response {
 
 	//环境
 	var envs []models.ConfigEnv
-	db.Find(&envs)
+	db().Find(&envs)
 	for _, v := range envs {
 		keys = append(keys, services.CacheKeyForEnv(v.Sign, "v1"))
 		keys = append(keys, services.CacheKeyForEnv(v.Sign, "v2"))
@@ -30,7 +30,7 @@ func (request *syncRequest) Run() *api.Response {
 
 	//工程
 	var projects []models.ConfigProject
-	db.Find(&projects)
+	db().Find(&projects)
 	for _, v := range projects {
 		keys = append(keys, services.CacheKeyForProject(v.Sign, "v1"))
 		keys = append(keys, services.CacheKeyForProject(v.Sign, "v2"))
@@ -39,7 +39,7 @@ func (request *syncRequest) Run() *api.Response {
 
 	//白名单
 	var ips []models.ConfigWhite
-	db.Find(&ips)
+	db().Find(&ips)
 	for _, v := range ips {
 		keys = append(keys, services.CacheKeyForWhite(v.Ip))
 		_ = services.SetCacheForWhite(v.Ip)
@@ -47,7 +47,7 @@ func (request *syncRequest) Run() *api.Response {
 
 	//配置
 	var configs []models.ConfigMain
-	db.Find(&configs)
+	db().Find(&configs)
 	for _, v := range configs {
 		keys = append(keys, services.CacheKeyForConfig(v.Sign))
 		_ = services.SetCacheForConfig(v.Sign, v.V)
@@ -58,7 +58,7 @@ func (request *syncRequest) Run() *api.Response {
 
 	//清除多余陈旧的缓存
 	var kvs []models.ConfigKv
-	db.Select("k").Find(&kvs)
+	db().Select("k").Find(&kvs)
 	for _, v := range kvs {
 		have := false
 		for _, vv := range keys {

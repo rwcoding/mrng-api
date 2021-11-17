@@ -14,14 +14,9 @@ import (
 var db *gorm.DB
 
 func GetDB() *gorm.DB {
-	return db
-}
-
-func init() {
-	InitDB()
-}
-
-func InitDB() *gorm.DB {
+	if db != nil {
+		return db
+	}
 	lvl := logger.Warn
 	if config.IsDev() {
 		lvl = logger.Info

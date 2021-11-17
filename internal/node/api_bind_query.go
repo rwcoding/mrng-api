@@ -38,13 +38,13 @@ func NewApiBindQuery(ctx *boot.Context) boot.Logic {
 
 func (request *bindQueryRequest) Run() *api.Response {
 	p := models.Node{}
-	if db.Take(&p, request.NodeId).Error != nil {
+	if db().Take(&p, request.NodeId).Error != nil {
 		return api.NewErrorResponse("无效的节点")
 	}
 
 	var bs []models.NodeService
 	bindIds := []uint32{}
-	db.Where("node_id = ?", p.Id).Find(&bs)
+	db().Where("node_id = ?", p.Id).Find(&bs)
 	for _, v := range bs {
 		bindIds = append(bindIds, v.ServiceId)
 	}
@@ -57,8 +57,8 @@ func (request *bindQueryRequest) Run() *api.Response {
 	var us []models.Service
 	var c int64
 
-	tx1 := db.Order("id desc").Offset(offset).Limit(pageSize)
-	tx2 := db.Model(&models.Service{})
+	tx1 := db().Order("id desc").Offset(offset).Limit(pageSize)
+	tx2 := db().Model(&models.Service{})
 	if request.Bind == 1 {
 		tx1.Where("id IN ?", bindIds)
 		tx2.Where("id IN ?", bindIds)

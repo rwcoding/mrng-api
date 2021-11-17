@@ -3,9 +3,12 @@
 .vscode
 .project
 .parcel-cache
-tmp
 node_modules
 
-/static
-/config.toml
+!.gitkeep
+
+/tmp/*
+/static/*
+
+/mrng.toml
 

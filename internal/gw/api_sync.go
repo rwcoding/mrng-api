@@ -20,7 +20,7 @@ func NewApiSync(ctx *boot.Context) boot.Logic {
 func (request *syncRequest) Run() *api.Response {
 	if request.Id > 0 {
 		var m models.Gw
-		if db.Take(&m, request.Id).Error != nil {
+		if db().Take(&m, request.Id).Error != nil {
 			return api.NewErrorResponse("无效的网关")
 		}
 		go (func() {

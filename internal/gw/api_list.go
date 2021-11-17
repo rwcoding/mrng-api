@@ -45,8 +45,8 @@ func (request *listRequest) Run() *api.Response {
 	var us []models.Gw
 	var c int64
 
-	tx1 := db.Order("id desc").Offset(offset).Limit(pageSize)
-	tx2 := db.Model(&models.Gw{})
+	tx1 := db().Order("id desc").Offset(offset).Limit(pageSize)
+	tx2 := db().Model(&models.Gw{})
 	if request.Name != "" {
 		tx1.Where("name LIKE ?", "%"+request.Name+"%")
 		tx2.Where("name LIKE ?", "%"+request.Name+"%")

@@ -11,8 +11,6 @@ import (
 	"strings"
 )
 
-var db = models.GetDB()
-
 func failure(msg string) []byte {
 	res := response{
 		Code:     0,
@@ -153,7 +151,7 @@ func getKey(key string) *cacheResult {
 	rc := services.NewRedis()
 	if rc == nil {
 		var kv models.ConfigKv
-		db.Where("k=?", key).Take(&kv)
+		models.GetDB().Where("k=?", key).Take(&kv)
 		return &cacheResult{
 			ds: &kv,
 		}

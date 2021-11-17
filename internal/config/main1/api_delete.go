@@ -20,15 +20,15 @@ func NewApiDelete(ctx *boot.Context) boot.Logic {
 func (request *deleteRequest) Run() *api.Response {
 	adminerId := request.ctx.GetAdminer().Id
 	var m models.ConfigMain
-	if db.Take(&m, request.Id).Error != nil {
+	if db().Take(&m, request.Id).Error != nil {
 		return api.NewErrorResponse("无效的配置")
 	}
 
-	if db.Delete(&m).RowsAffected == 0 {
+	if db().Delete(&m).RowsAffected == 0 {
 		return api.NewErrorResponse("删除失败")
 	}
 
-	db.Create(&models.ConfigLog{
+	db().Create(&models.ConfigLog{
 		Type:      models.LOG_TYPE_DELETE,
 		Name:      m.Name,
 		Sign:      m.Sign,

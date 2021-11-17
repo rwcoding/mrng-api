@@ -41,12 +41,12 @@ func (request *addRequest) Run() *api.Response {
 
 	p.Sign = p.Env + "." + p.Project + "." + p.K
 
-	if db.Create(&p).RowsAffected == 0 {
+	if db().Create(&p).RowsAffected == 0 {
 		return api.NewErrorResponse("添加失败")
 	}
 
 	// 日志
-	db.Create(&models.ConfigLog{
+	db().Create(&models.ConfigLog{
 		Type:      models.LOG_TYPE_CREATE,
 		Name:      p.Name,
 		Sign:      p.Sign,

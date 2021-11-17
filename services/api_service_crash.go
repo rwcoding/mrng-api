@@ -21,21 +21,21 @@ func SyncServiceCrash(service models.Service) {
 	var gwIdList []uint32
 	var services []models.Service
 	var crashList []string
-	db.Where("service_id = ?", service.Id).Find(&nodeServices)
+	db().Where("service_id = ?", service.Id).Find(&nodeServices)
 	for _, v := range nodeServices {
 		nodeIdList = append(nodeIdList, v.NodeId)
 	}
 	nodeIdList = Unique(nodeIdList)
 
 	if len(nodeIdList) > 0 {
-		db.Where("node_id IN ?", nodeIdList).Find(&gwNodes)
+		db().Where("node_id IN ?", nodeIdList).Find(&gwNodes)
 		for _, v := range gwNodes {
 			gwIdList = append(gwIdList, v.GwId)
 		}
 		gwIdList = Unique(gwIdList)
 	}
 
-	db.Where("status=0").Find(&services)
+	db().Where("status=0").Find(&services)
 	for _, v := range services {
 		crashList = append(crashList, v.Sign)
 	}
@@ -48,7 +48,7 @@ func SyncServiceCrash(service models.Service) {
 
 	if len(gwIdList) > 0 {
 		var gws []models.Gw
-		db.Find(&gws, gwIdList)
+		db().Find(&gws, gwIdList)
 		for _, v := range gws {
 			apiRequest(v.Api, v.Key, reqData)
 		}

@@ -27,12 +27,12 @@ func NewApiBind(ctx *boot.Context) boot.Logic {
 
 func (request *bindRequest) Run() *api.Response {
 	p := models.Node{}
-	if db.Take(&p, request.NodeId).Error != nil {
+	if db().Take(&p, request.NodeId).Error != nil {
 		return api.NewErrorResponse("无效的节点")
 	}
 
 	var nodeServices []models.NodeService
-	db.Where("node_id=?", p.Id).Find(&nodeServices)
+	db().Where("node_id=?", p.Id).Find(&nodeServices)
 
 	var insert []models.NodeService
 	isBind := request.IsBind == 1
@@ -44,7 +44,7 @@ func (request *bindRequest) Run() *api.Response {
 			if int(vv.ServiceId) == v {
 				in = true
 				if !isBind {
-					db.Delete(&models.NodeService{}, vv.Id)
+					db().Delete(&models.NodeService{}, vv.Id)
 					dc += 1
 				}
 			}
@@ -59,7 +59,7 @@ func (request *bindRequest) Run() *api.Response {
 		})
 	}
 	if len(insert) > 0 {
-		ret := db.Create(insert)
+		ret := db().Create(insert)
 		ic = int(ret.RowsAffected)
 	}
 
@@ -67,13 +67,13 @@ func (request *bindRequest) Run() *api.Response {
 		var ns []models.NodeService
 		var ids []uint32
 		var nameList []string
-		db.Where("node_id = ?", p.Id).Find(&ns)
+		db().Where("node_id = ?", p.Id).Find(&ns)
 		for _, v := range ns {
 			ids = append(ids, v.ServiceId)
 		}
 		if len(ids) > 0 {
 			var services []models.Service
-			db.Find(&services, ids)
+			db().Find(&services, ids)
 			for _, v := range services {
 				nameList = append(nameList, v.Sign)
 			}
@@ -83,7 +83,7 @@ func (request *bindRequest) Run() *api.Response {
 		if len(nameList) > 0 {
 			names = strings.Join(nameList, ",")
 		}
-		db.Model(&p).Update("services", names)
+		db().Model(&p).Update("services", names)
 
 		go (func() { services.SyncNodeUpdate(p) })()
 	}

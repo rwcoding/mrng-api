@@ -24,7 +24,7 @@ func NewApiEdit(ctx *boot.Context) boot.Logic {
 func (request *editRequest) Run() *api.Response {
 
 	p := models.Gw{}
-	if db.Take(&p, request.Id).Error != nil {
+	if db().Take(&p, request.Id).Error != nil {
 		return api.NewErrorResponse("无效的网关")
 	}
 
@@ -35,7 +35,7 @@ func (request *editRequest) Run() *api.Response {
 	p.Key = strings.TrimSpace(request.Key)
 	p.Weight = request.Weight
 
-	if db.Save(&p).RowsAffected == 0 {
+	if db().Save(&p).RowsAffected == 0 {
 		return api.NewErrorResponse("修改失败")
 	}
 	if isNeedSync {

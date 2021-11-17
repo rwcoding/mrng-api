@@ -19,11 +19,11 @@ func NewApiDelete(ctx *boot.Context) boot.Logic {
 
 func (request *deleteRequest) Run() *api.Response {
 	var m models.ConfigWhite
-	if db.Take(&m, request.Id).Error != nil {
+	if db().Take(&m, request.Id).Error != nil {
 		return api.NewErrorResponse("无效的IP")
 	}
 
-	if db.Delete(&m).RowsAffected == 0 {
+	if db().Delete(&m).RowsAffected == 0 {
 		return api.NewErrorResponse("删除失败")
 	}
 

@@ -9,7 +9,7 @@ import (
 
 func DeleteCache(k string) error {
 	var kv models.ConfigKv
-	db.Where("k=?", k).Delete(&kv)
+	db().Where("k=?", k).Delete(&kv)
 	for _, v := range redisPools {
 		v.Del(k)
 	}
@@ -18,10 +18,10 @@ func DeleteCache(k string) error {
 
 func SetCache(k, v string) error {
 	var kv models.ConfigKv
-	db.Where("k=?", k).Take(&kv)
+	db().Where("k=?", k).Take(&kv)
 	if kv.Id > 0 {
 		if kv.V != v {
-			tx := db.Model(kv).Update("v", v)
+			tx := db().Model(kv).Update("v", v)
 			if tx.Error != nil {
 				return tx.Error
 			}
@@ -29,7 +29,7 @@ func SetCache(k, v string) error {
 	} else {
 		kv.K = k
 		kv.V = v
-		tx := db.Create(&kv)
+		tx := db().Create(&kv)
 		if tx.Error != nil {
 			return tx.Error
 		}
@@ -44,7 +44,7 @@ func SetCache(k, v string) error {
 
 func GetCache(k string) (string, error) {
 	var kv models.ConfigKv
-	db.Where("k=?", k).Take(&kv)
+	db().Where("k=?", k).Take(&kv)
 	if kv.Id > 0 {
 		return kv.V, nil
 	}
@@ -112,12 +112,12 @@ func CacheKeyForVersion() string {
 func SetVersion(sign string) error {
 	if sign != "" {
 		arr := strings.Split(sign, ".")
-		db.Exec("UPDATE "+(&models.ConfigEnv{}).TableName()+" SET version = version+1 WHERE sign = ?", arr[0])
+		db().Exec("UPDATE "+(&models.ConfigEnv{}).TableName()+" SET version = version+1 WHERE sign = ?", arr[0])
 	}
 
 	var envs []models.ConfigEnv
 	versions := map[string]interface{}{}
-	db.Find(&envs)
+	db().Find(&envs)
 
 	if len(envs) == 0 {
 		return nil

@@ -25,7 +25,7 @@ func NewApiAdd(ctx *boot.Context) boot.Logic {
 
 func (request *addRequest) Run() *api.Response {
 	var count int64
-	db.Model(&models.Service{}).Where("sign=?", request.Sign).Count(&count)
+	db().Model(&models.Service{}).Where("sign=?", request.Sign).Count(&count)
 	if count > 0 {
 		return api.NewErrorResponse("相同标识 " + request.Sign + " 已经存在")
 	}
@@ -36,7 +36,7 @@ func (request *addRequest) Run() *api.Response {
 		Status: request.Status,
 	}
 
-	tx := db.Create(&p)
+	tx := db().Create(&p)
 
 	if tx.Error != nil {
 		return api.NewErrorResponse("添加失败 " + tx.Error.Error())

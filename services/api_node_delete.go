@@ -22,10 +22,10 @@ func SyncNodeDelete(node models.Node) {
 	}
 
 	var gwNodes []models.GwNode
-	db.Where("node_id=?", node.Id).Find(&gwNodes)
+	db().Where("node_id=?", node.Id).Find(&gwNodes)
 	for _, v := range gwNodes {
 		var gw models.Gw
-		db.Take(&gw, v.GwId)
+		db().Take(&gw, v.GwId)
 		if gw.Id > 0 {
 			apiRequest(gw.Api, gw.Key, reqData)
 		}

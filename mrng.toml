@@ -4,6 +4,12 @@ env  = "dev"
 # 绑定地址
 addr = ":8080"  # 绑定地址
 
+# 服务端是否处理跨域header 如果您的前端Nginx处理 无需该操作
+header = true
+
+# 您的网络环境是否仅支持GET、POST方法
+only_gp = false
+
 # 日志等级
 log  = ""
 
@@ -25,7 +31,7 @@ host = "127.0.0.1"
 port = 3306
 username = "root"
 password = "root"
-dbname   = "gobui"
+dbname   = "mrng"
 charset  = "utf8mb4"
 pool_max_open = 100
 pool_max_idle = 50

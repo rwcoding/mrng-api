@@ -21,7 +21,7 @@ func NewApiStatus(ctx *boot.Context) boot.Logic {
 func (request *statusRequest) Run() *api.Response {
 
 	p := models.Node{}
-	if db.Take(&p, request.Id).Error != nil {
+	if db().Take(&p, request.Id).Error != nil {
 		return api.NewErrorResponse("无效的节点")
 	}
 
@@ -29,7 +29,7 @@ func (request *statusRequest) Run() *api.Response {
 
 	p.Status = request.Status
 
-	if db.Save(&p).RowsAffected == 0 {
+	if db().Save(&p).RowsAffected == 0 {
 		return api.NewErrorResponse("修改失败")
 	}
 

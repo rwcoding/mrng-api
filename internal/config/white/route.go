@@ -5,7 +5,7 @@ import (
 	"github.com/rwcoding/mrng/models"
 )
 
-var db = models.GetDB()
+var db = models.GetDB
 
 func init() {
 	goback.Route("mrng.config.white.list", NewApiList, "白名单列表")

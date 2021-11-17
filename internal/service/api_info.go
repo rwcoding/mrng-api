@@ -25,7 +25,7 @@ func NewApiInfo(ctx *boot.Context) boot.Logic {
 
 func (request *infoRequest) Run() *api.Response {
 	var p models.Service
-	if db.Take(&p, request.Id).Error != nil {
+	if db().Take(&p, request.Id).Error != nil {
 		return api.NewErrorResponse("无效的服务")
 	}
 	return api.NewDataResponse(&infoResponse{

@@ -26,16 +26,16 @@ func NewApiBind(ctx *boot.Context) boot.Logic {
 
 func (request *bindRequest) Run() *api.Response {
 	p := models.Gw{}
-	if db.Take(&p, request.GwId).Error != nil {
+	if db().Take(&p, request.GwId).Error != nil {
 		return api.NewErrorResponse("无效的网关")
 	}
 
 	var gwNodes []models.GwNode
-	db.Where("gw_id=?", p.Id).Find(&gwNodes)
+	db().Where("gw_id=?", p.Id).Find(&gwNodes)
 
 	//var nodes []models.Node
 	//if len(request.Nodes) > 0 {
-	//	db.Find(&nodes, request.Nodes)
+	//	db().Find(&nodes, request.Nodes)
 	//}
 
 	var insert []models.GwNode
@@ -48,7 +48,7 @@ func (request *bindRequest) Run() *api.Response {
 			if int(vv.NodeId) == v {
 				in = true
 				if !isBind {
-					db.Delete(&models.GwNode{}, vv.Id)
+					db().Delete(&models.GwNode{}, vv.Id)
 					dc += 1
 				}
 			}
@@ -63,7 +63,7 @@ func (request *bindRequest) Run() *api.Response {
 		})
 	}
 	if len(insert) > 0 {
-		ret := db.Create(insert)
+		ret := db().Create(insert)
 		ic = int(ret.RowsAffected)
 	}
 

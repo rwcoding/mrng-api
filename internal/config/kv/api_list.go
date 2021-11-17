@@ -43,8 +43,8 @@ func (request *listRequest) Run() *api.Response {
 	var us []models.ConfigKv
 	var c int64
 
-	tx1 := db.Order("id desc").Offset(offset).Limit(pageSize)
-	tx2 := db.Model(&models.ConfigKv{})
+	tx1 := db().Order("id desc").Offset(offset).Limit(pageSize)
+	tx2 := db().Model(&models.ConfigKv{})
 	if request.K != "" {
 		tx1.Where("k LIKE ?", "%"+request.K+"%")
 		tx2.Where("k LIKE ?", "%"+request.K+"%")

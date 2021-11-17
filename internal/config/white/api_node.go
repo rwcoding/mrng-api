@@ -20,7 +20,7 @@ func (request *syncNodeRequest) Run() *api.Response {
 
 	var ips []string
 	var nodes []models.Node
-	db.Find(&nodes)
+	db().Find(&nodes)
 	for _, v := range nodes {
 		tmp := strings.Split(v.Addr, ":")
 		if len(tmp) > 0 && services.VerifyIp(tmp[0]) {
@@ -34,7 +34,7 @@ func (request *syncNodeRequest) Run() *api.Response {
 	ips = services.UniqueString(ips)
 
 	var ws []models.ConfigWhite
-	db.Where("ip IN ?", ips).Find(&ws)
+	db().Where("ip IN ?", ips).Find(&ws)
 
 	var insert []models.ConfigWhite
 	for _, v := range ips {
@@ -50,7 +50,7 @@ func (request *syncNodeRequest) Run() *api.Response {
 	}
 
 	if len(insert) > 0 {
-		db.Create(insert)
+		db().Create(insert)
 		for _, v := range insert {
 			_ = services.SetCacheForWhite(v.Ip)
 		}

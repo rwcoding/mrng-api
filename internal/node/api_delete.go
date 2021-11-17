@@ -19,16 +19,16 @@ func NewApiDelete(ctx *boot.Context) boot.Logic {
 
 func (request *deleteRequest) Run() *api.Response {
 	var m models.Node
-	if db.Take(&m, request.Id).Error != nil {
+	if db().Take(&m, request.Id).Error != nil {
 		return api.NewErrorResponse("无效的节点")
 	}
 
-	if db.Delete(&m).RowsAffected == 0 {
+	if db().Delete(&m).RowsAffected == 0 {
 		return api.NewErrorResponse("删除失败")
 	}
 
-	db.Where("node_id=?", m.Id).Delete(&models.GwNode{})
-	db.Where("node_id=?", m.Id).Delete(&models.NodeService{})
+	db().Where("node_id=?", m.Id).Delete(&models.GwNode{})
+	db().Where("node_id=?", m.Id).Delete(&models.NodeService{})
 
 	go (func() { services.SyncNodeDelete(m) })()
 

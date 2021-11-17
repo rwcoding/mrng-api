@@ -19,11 +19,11 @@ func NewApiRecover(ctx *boot.Context) boot.Logic {
 
 func (request *recoverRequest) Run() *api.Response {
 	var u models.Service
-	if db.Unscoped().Take(&u, request.Id).Error != nil {
+	if db().Unscoped().Take(&u, request.Id).Error != nil {
 		return api.NewErrorResponse("无效的服务")
 	}
 
-	if db.Model(&u).Update("deleted_at", 0).RowsAffected == 0 {
+	if db().Model(&u).Update("deleted_at", 0).RowsAffected == 0 {
 		return api.NewErrorResponse("恢复失败")
 	}
 

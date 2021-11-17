@@ -14,13 +14,13 @@ func SyncNodeUpdate(node models.Node) {
 	var nodeServices []models.NodeService
 	var serviceIdList []uint32
 	var services []models.Service
-	db.Where("node_id = ?", node.Id).Find(&nodeServices)
+	db().Where("node_id = ?", node.Id).Find(&nodeServices)
 	for _, v := range nodeServices {
 		serviceIdList = append(serviceIdList, v.ServiceId)
 	}
 	if len(serviceIdList) > 0 {
 		serviceIdList = Unique(serviceIdList)
-		db.Find(&services, serviceIdList)
+		db().Find(&services, serviceIdList)
 	}
 
 	serverNameList := []string{}
@@ -44,10 +44,10 @@ func SyncNodeUpdate(node models.Node) {
 	}
 
 	var gwNodes []models.GwNode
-	db.Where("node_id=?", node.Id).Find(&gwNodes)
+	db().Where("node_id=?", node.Id).Find(&gwNodes)
 	for _, v := range gwNodes {
 		var gw models.Gw
-		db.Take(&gw, v.GwId)
+		db().Take(&gw, v.GwId)
 		if gw.Id > 0 {
 			apiRequest(gw.Api, gw.Key, reqData)
 		}

@@ -49,8 +49,8 @@ func (request *listRequest) Run() *api.Response {
 	var us []models.ConfigLog
 	var c int64
 
-	tx1 := db.Order("id desc").Offset(offset).Limit(pageSize)
-	tx2 := db.Model(&models.ConfigLog{})
+	tx1 := db().Order("id desc").Offset(offset).Limit(pageSize)
+	tx2 := db().Model(&models.ConfigLog{})
 	if request.Name != "" {
 		tx1.Where("name LIKE ?", "%"+request.Name+"%")
 		tx2.Where("name LIKE ?", "%"+request.Name+"%")
@@ -78,8 +78,8 @@ func (request *listRequest) Run() *api.Response {
 
 	var es []models.ConfigEnv
 	var ps []models.ConfigProject
-	db.Order("ord").Find(&es)
-	db.Order("ord").Find(&ps)
+	db().Order("ord").Find(&es)
+	db().Order("ord").Find(&ps)
 
 	eNames := map[string]string{}
 	pNames := map[string]string{}

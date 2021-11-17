@@ -27,7 +27,7 @@ func NewApiInfo(ctx *boot.Context) boot.Logic {
 
 func (request *infoRequest) Run() *api.Response {
 	var p models.ConfigProject
-	if db.Take(&p, request.Id).Error != nil {
+	if db().Take(&p, request.Id).Error != nil {
 		return api.NewErrorResponse("无效的工程")
 	}
 	return api.NewDataResponse(&infoResponse{

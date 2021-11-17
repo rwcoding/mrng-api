@@ -39,13 +39,13 @@ func NewApiBindQuery(ctx *boot.Context) boot.Logic {
 
 func (request *bindQueryRequest) Run() *api.Response {
 	p := models.Gw{}
-	if db.Take(&p, request.GwId).Error != nil {
+	if db().Take(&p, request.GwId).Error != nil {
 		return api.NewErrorResponse("无效的网关")
 	}
 
 	var bs []models.GwNode
 	bindNodeIds := []uint32{}
-	db.Where("gw_id = ?", p.Id).Find(&bs)
+	db().Where("gw_id = ?", p.Id).Find(&bs)
 	for _, v := range bs {
 		bindNodeIds = append(bindNodeIds, v.NodeId)
 	}
@@ -58,8 +58,8 @@ func (request *bindQueryRequest) Run() *api.Response {
 	var us []models.Node
 	var c int64
 
-	tx1 := db.Order("id desc").Offset(offset).Limit(pageSize)
-	tx2 := db.Model(&models.Node{})
+	tx1 := db().Order("id desc").Offset(offset).Limit(pageSize)
+	tx2 := db().Model(&models.Node{})
 	if request.Bind == 1 {
 		tx1.Where("id IN ?", bindNodeIds)
 		tx2.Where("id IN ?", bindNodeIds)

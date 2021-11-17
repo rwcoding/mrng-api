@@ -3,13 +3,14 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/rwcoding/goback"
-	_ "github.com/rwcoding/goback/pkg/router"
 	"github.com/rwcoding/mrng/center"
 	"github.com/rwcoding/mrng/config"
-	_ "github.com/rwcoding/mrng/internal"
 	"github.com/rwcoding/mrng/models"
 	"github.com/rwcoding/mrng/services"
 	"log"
+
+	_ "github.com/rwcoding/goback/pkg/router"
+	_ "github.com/rwcoding/mrng/internal"
 )
 
 func main() {
@@ -19,7 +20,7 @@ func main() {
 	goback.SetLogFile(config.GetLog())
 	goback.SetOnlyGP(config.IsOnlyGP())
 	goback.SetWriteHeader(config.IsWriteHeader())
-	goback.SetDb(models.InitDB())
+	goback.SetDb(models.GetDB())
 
 	services.InitRedis()
 
@@ -36,6 +37,9 @@ func main() {
 		services.SyncTimer()
 		e := gin.Default()
 		e.POST("/api", func(context *gin.Context) {
+			goback.Run(context)
+		})
+		e.OPTIONS("/api", func(context *gin.Context) {
 			goback.Run(context)
 		})
 		e.NoRoute(staticHandler)

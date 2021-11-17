@@ -39,8 +39,8 @@ func (request *listRequest) Run() *api.Response {
 	var us []models.ConfigWhite
 	var c int64
 
-	tx1 := db.Order("id desc").Offset(offset).Limit(pageSize)
-	tx2 := db.Model(&models.ConfigWhite{})
+	tx1 := db().Order("id desc").Offset(offset).Limit(pageSize)
+	tx2 := db().Model(&models.ConfigWhite{})
 	if request.Ip != "" {
 		tx1.Where("ip LIKE ?", "%"+request.Ip+"%")
 		tx2.Where("ip LIKE ?", "%"+request.Ip+"%")

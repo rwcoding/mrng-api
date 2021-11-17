@@ -24,7 +24,7 @@ type reqSync struct {
 
 func Sync() {
 	var gws []models.Gw
-	db.Where("status=1").Find(&gws)
+	db().Where("status=1").Find(&gws)
 	for _, v := range gws {
 		SyncGw(v)
 	}
@@ -34,24 +34,24 @@ func SyncGw(gw models.Gw) {
 	var gwNodes []models.GwNode
 	var nodeIdList []uint32
 	var nodes []models.Node
-	db.Where("gw_id=?", gw.Id).Find(&gwNodes)
+	db().Where("gw_id=?", gw.Id).Find(&gwNodes)
 	for _, v := range gwNodes {
 		nodeIdList = append(nodeIdList, v.NodeId)
 	}
 	if len(nodeIdList) > 0 {
-		db.Where("status=1").Find(&nodes, nodeIdList)
+		db().Where("status=1").Find(&nodes, nodeIdList)
 	}
 
 	var nodeServices []models.NodeService
 	var serviceIdList []uint32
 	var services []models.Service
-	db.Where("node_id IN ?", nodeIdList).Find(&nodeServices)
+	db().Where("node_id IN ?", nodeIdList).Find(&nodeServices)
 	for _, v := range nodeServices {
 		serviceIdList = append(serviceIdList, v.ServiceId)
 	}
 	if len(serviceIdList) > 0 {
 		serviceIdList = Unique(serviceIdList)
-		db.Find(&services, serviceIdList)
+		db().Find(&services, serviceIdList)
 	}
 
 	reqNodes := []reqNode{}

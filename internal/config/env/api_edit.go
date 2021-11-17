@@ -25,7 +25,7 @@ func NewApiEdit(ctx *boot.Context) boot.Logic {
 func (request *editRequest) Run() *api.Response {
 
 	p := models.ConfigEnv{}
-	if db.Take(&p, request.Id).Error != nil {
+	if db().Take(&p, request.Id).Error != nil {
 		return api.NewErrorResponse("无效的环境")
 	}
 
@@ -34,7 +34,7 @@ func (request *editRequest) Run() *api.Response {
 	p.KeyV2 = request.KeyV2
 	p.Ord = request.Ord
 
-	if db.Save(&p).RowsAffected == 0 {
+	if db().Save(&p).RowsAffected == 0 {
 		return api.NewErrorResponse("修改失败")
 	}
 

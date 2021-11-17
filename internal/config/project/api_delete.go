@@ -19,15 +19,15 @@ func NewApiDelete(ctx *boot.Context) boot.Logic {
 
 func (request *deleteRequest) Run() *api.Response {
 	var m models.ConfigProject
-	if db.Take(&m, request.Id).Error != nil {
+	if db().Take(&m, request.Id).Error != nil {
 		return api.NewErrorResponse("无效的工程")
 	}
 
-	if db.Delete(&m).RowsAffected == 0 {
+	if db().Delete(&m).RowsAffected == 0 {
 		return api.NewErrorResponse("删除失败")
 	}
 
-	db.Where("project = ?", m.Sign).Delete(&models.ConfigMain{})
+	db().Where("project = ?", m.Sign).Delete(&models.ConfigMain{})
 
 	err := services.DeleteCacheForProject(m.Sign)
 	if err != nil {

@@ -46,8 +46,8 @@ func (request *listRequest) Run() *api.Response {
 	var us []models.Service
 	var c int64
 
-	tx1 := db.Order("id desc").Offset(offset).Limit(pageSize)
-	tx2 := db.Model(&models.Service{})
+	tx1 := db().Order("id desc").Offset(offset).Limit(pageSize)
+	tx2 := db().Model(&models.Service{})
 	if request.Recycle == 1 {
 		tx1.Unscoped()
 		tx2.Unscoped()
