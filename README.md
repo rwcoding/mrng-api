@@ -1,30 +1,5 @@
 # MRNG网关管理面板及一个简单地配置中心
 
-## 构建前端
-> 前后端分离模式，前端采用 bootstrap5，**因此它不支持IE浏览器**  
-
-### 依赖
-```
-npm i -g parcel
-npm i -g @rwcoding/mcss
-```
-
-### 运行
-```
-cd web
-npm install
-mcss
-```
-
-### 构建
-```
-cd web
-mcss build
-node build.js
-```
-> 构建结果在 `tmp/dist` 目录下  
-> 同时复制一份到 `api/static` 目录下，**如果没有请手动复制**  
-
 ## 后端Api
 ### 依赖
 > MySql   
@@ -32,7 +7,6 @@ node build.js
 
 ### 构建
 ```
-cd api
 go build -gcflags=-m -ldflags="-w -s" -o tmp/mrng.exe main.go static_handle.go
 ```
 
@@ -40,19 +14,14 @@ go build -gcflags=-m -ldflags="-w -s" -o tmp/mrng.exe main.go static_handle.go
 > 遵循go项目的常规构建方式，可自行编写  
 > 构建时会将前端文件一起打包  
 > 所有接口使用 `post` 请求  
-> 后端配置，请参照 `config.sample.toml` 文件  
+> 后端配置，请参照 `mrng.sample.toml` 文件  
 > 数据库请自行导入，可查询发行版本的SQL文件  
 > 默认账号密码 "admin" "admin"  
 
 ### 运行
 ```
-mrng --conf /etc/mrng.conf
+mrng --conf /etc/mrng.toml
 ```
-
-## 网关节点管理
-+ 网关：指 Openresty
-+ 节点：后端业务处理服务
-+ 服务：归纳的业务服务名称
 
 ## 配置中心
 + 环境  必须，指 开发、生产、灰度等自定义环境，每个环境配备 `访问密钥`
