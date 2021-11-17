@@ -5,10 +5,10 @@
 .parcel-cache
 node_modules
 
-!.gitkeep
 
 /tmp/*
 /static/*
+!.gitkeep
 
 /mrng.toml
 
