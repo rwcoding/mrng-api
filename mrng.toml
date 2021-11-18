@@ -21,7 +21,7 @@ only_cc = false
 
 # redis 配置中心缓存配置，可配置多个
 [[redis]]
-addr     = "127.0.0.1:16389"
+addr     = "127.0.0.1:16379"
 password = ""
 pool     = 5  # redis连接池大小
 

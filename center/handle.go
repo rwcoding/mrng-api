@@ -11,23 +11,29 @@ import (
 	"strings"
 )
 
-func failure(msg string) []byte {
+func failure(msg string, id int64) []byte {
 	res := response{
-		Code:     0,
-		Msg:      msg,
-		Versions: map[string]int64{},
-		Data:     map[string]interface{}{},
+		Jsonrpc: "2.0",
+		Error: &responseError{
+			Code:    0,
+			Message: msg,
+		},
+		Result: nil,
+		Id:     id,
 	}
 	b, _ := json.Marshal(res)
 	return b
 }
 
-func success(versions map[string]int64, data map[string]interface{}) ([]byte, error) {
+func success(versions map[string]int64, data map[string]interface{}, id int64) ([]byte, error) {
 	res := response{
-		Code:     1,
-		Msg:      "",
-		Data:     data,
-		Versions: versions,
+		Jsonrpc: "2.0",
+		Error:   nil,
+		Result: &responseResult{
+			Versions: versions,
+			Data:     data,
+		},
+		Id: id,
 	}
 	b, err := json.Marshal(res)
 	if err != nil {
@@ -36,29 +42,46 @@ func success(versions map[string]int64, data map[string]interface{}) ([]byte, er
 	return b, nil
 }
 
-type request struct {
+type requestParams struct {
 	Certs map[string]string `json:"certs"`
 	Keys  []string          `json:"keys"`
 }
 
-type response struct {
-	Code     int                    `json:"code"`
-	Msg      string                 `json:"msg"`
+type request struct {
+	Jsonrpc string        `json:"jsonrpc"`
+	Method  string        `json:"method"`
+	Params  requestParams `json:"params"`
+	Id      int64         `json:"id"`
+}
+
+type responseResult struct {
 	Versions map[string]int64       `json:"versions"`
 	Data     map[string]interface{} `json:"data"`
+}
+
+type responseError struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
+type response struct {
+	Jsonrpc string          `json:"jsonrpc"`
+	Error   *responseError  `json:"error,omitempty"`
+	Result  *responseResult `json:"result,omitempty"`
+	Id      int64           `json:"id"`
 }
 
 func Handle(c *gin.Context) {
 
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
-		c.Data(http.StatusOK, "application/json", failure("数据读取错误"))
+		c.Data(http.StatusOK, "application/json", failure("数据读取错误", 0))
 		return
 	}
 
 	req := &request{}
 	if json.Unmarshal(body, req) != nil {
-		c.Data(http.StatusOK, "application/json", failure("json解析错误"))
+		c.Data(http.StatusOK, "application/json", failure("json解析错误", 0))
 		return
 	}
 
@@ -66,7 +89,7 @@ func Handle(c *gin.Context) {
 	needVerifyEnv := []string{}
 	needVerifyProject := []string{}
 
-	for _, v := range req.Keys {
+	for _, v := range req.Params.Keys {
 		tmp := strings.Split(v, ".")
 		if len(tmp) < 3 {
 			continue
@@ -74,10 +97,10 @@ func Handle(c *gin.Context) {
 		needVerifyEnv = append(needVerifyEnv, tmp[0])
 		needVerifyProject = append(needVerifyProject, tmp[1])
 	}
-	for k, _ := range req.Certs {
+	for k, _ := range req.Params.Certs {
 		tmp := strings.Split(k, ":")
 		if len(tmp) < 2 {
-			c.Data(http.StatusOK, "application/json", failure(k+"错误"))
+			c.Data(http.StatusOK, "application/json", failure(k+"错误", req.Id))
 			return
 		}
 		if tmp[0] == "E" {
@@ -101,8 +124,8 @@ func Handle(c *gin.Context) {
 		}
 
 		if certs[ck1] != "" || certs[ck2] != "" {
-			if req.Certs["E:"+env] != certs[ck1] && req.Certs["E:"+env] != certs[ck2] {
-				c.Data(http.StatusOK, "application/json", failure("环境"+env+"密钥错误"))
+			if req.Params.Certs["E:"+env] != certs[ck1] && req.Params.Certs["E:"+env] != certs[ck2] {
+				c.Data(http.StatusOK, "application/json", failure("环境"+env+"密钥错误", req.Id))
 				return
 			}
 		}
@@ -118,14 +141,14 @@ func Handle(c *gin.Context) {
 		}
 
 		if certs[k1] != "" || certs[k2] != "" {
-			if req.Certs["P:"+project] != certs[k1] && req.Certs["P:"+project] != certs[k2] {
-				c.Data(http.StatusOK, "application/json", failure("工程"+project+"密钥错误"))
+			if req.Params.Certs["P:"+project] != certs[k1] && req.Params.Certs["P:"+project] != certs[k2] {
+				c.Data(http.StatusOK, "application/json", failure("工程"+project+"密钥错误", req.Id))
 				return
 			}
 		}
 	}
 
-	for _, v := range req.Keys {
+	for _, v := range req.Params.Keys {
 		if vv, err := getKey(services.CacheKeyForConfig(v)).Result(); err == nil {
 			ret[v] = vv
 		} else {
@@ -138,9 +161,9 @@ func Handle(c *gin.Context) {
 		_ = json.Unmarshal([]byte(vs), &versions)
 	}
 
-	res, err := success(versions, ret)
+	res, err := success(versions, ret, req.Id)
 	if err != nil {
-		c.String(http.StatusOK, "application/json", failure(err.Error()))
+		c.String(http.StatusOK, "application/json", failure(err.Error(), req.Id))
 		return
 	}
 

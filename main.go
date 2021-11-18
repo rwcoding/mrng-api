@@ -25,17 +25,11 @@ func main() {
 	services.InitRedis()
 
 	gin.SetMode(config.GetMode())
-	if goback.App().Console.HasCommand("cc") || config.IsOnlyCc() {
-		//仅仅启动配置中心api
-		e := gin.Default()
-		e.POST("/cc", center.Handle)
-		err := e.Run(config.GetAddr())
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
+	e := gin.Default()
+	e.POST("/cc", center.Handle)
+
+	if !goback.App().Console.HasCommand("cc") && !config.IsOnlyCc() {
 		services.SyncTimer()
-		e := gin.Default()
 		e.POST("/api", func(context *gin.Context) {
 			goback.Run(context)
 		})
@@ -43,9 +37,10 @@ func main() {
 			goback.Run(context)
 		})
 		e.NoRoute(staticHandler)
-		err := e.Run(config.GetAddr())
-		if err != nil {
-			log.Fatal(err)
-		}
+	}
+
+	err := e.Run(config.GetAddr())
+	if err != nil {
+		log.Fatal(err)
 	}
 }
